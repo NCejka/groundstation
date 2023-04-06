@@ -301,12 +301,14 @@ import queue
 
 # TO TEST
 # server_ip = "127.0.0.1"
-# server_port = 65432
+server_port = 65432
 
-# TO RUN
+server_ip = "192.168.0.110"
+
+# TO RUN ON ROBOT
 # set my IPv4 static to 192.168.0.98
-server_ip = "192.168.0.123"
-server_port = 10
+# server_ip = "192.168.0.123"
+# server_port = 10
 
 server_socket = None
 server_connection = False
@@ -392,7 +394,7 @@ def thread_recv_data(pause):
             try:
                 packet = packet.decode()
             except Exception as ex2:
-                print(f"Recv Decode Errors ({packet}): {ex} and {ex2}")
+                print(f"Recv Decode Errors: {ex} and {ex2}")
                 break
             
             

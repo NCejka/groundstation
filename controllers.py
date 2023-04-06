@@ -99,7 +99,6 @@ class XboxController(object):
                 # print("Deleting self")
                 # del self # doesnt work like that b :(
             
-            sleep(0.1) # Slow poll rate to 30 hz
 
 from threading import Thread
 
