@@ -329,7 +329,7 @@ def thread_send_data(pause):
     
     # Continuously send data from queue to server
     while True: #server_connection:
-        window.ui.lcdNumberOutQue.display(outgoing_queue.qsize())
+        #window.ui.lcdNumberOutQue.display(outgoing_queue.qsize())
         #window.ui.lcdNumberOutQue.display(outgoing_queue.unfinished_tasks)
         pause.wait()
         
@@ -378,7 +378,7 @@ def thread_recv_data(pause):
         # data = ''
         # receive complete data stream:
         # while not all_packets:
-        window.ui.lcdNumberInQue.display(incoming_queue.qsize())
+        #window.ui.lcdNumberInQue.display(incoming_queue.qsize())
         pause.wait()
         
         try:
@@ -438,7 +438,36 @@ def thread_recv_data(pause):
     # The client will disconnect if broken out of loop??? noo>?
     # now done automatically? dont think so.....
     # window.ui.on_pushButton_9_clicked()
+
+
+class TCPClient(object):
+
     
+
+    def Start(ip,soc): 
+        # Connect the socket to the port where the server is listening
+        server_address = (ip,soc)
+        print('connecting to {} port {}'.format(*server_address))
+        sock.connect(server_address)
+
+    def Close():
+        print('closing socket')
+        sock.close()
+
+    def Send(msg):   
+        # Create a TCP/IP socket 
+        try:
+            # Send data
+            message = bytes.fromhex(msg) #right now 0x a1 11 turns on an LED and 0x a1 00 turns off that led
+            print('sending {!r}'.format(message))
+            sock.sendall(message)
+            data = sock.recv(1024)
+            print(f"Received {data!r}")
+        finally:
+            print(' ')
+
+
+
 def server_connect_disconnect():
     global server_ip
     global server_port
@@ -594,15 +623,16 @@ if __name__ == "__main__":
     #self._monitor_thread.daemon = True
     #self._monitor_thread.start()
     
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    TCPClient.Start('192.168.0.123',10)
+    
     from controllers import XboxController, KeyboardController, controllerHandler
     controllerXbox = XboxController()
     controllerKeyboard = KeyboardController()
     # Need to create another thread that processes continuous inputs for sending if activated
     
-    inputHandlerThread = controllerHandler(outgoing_queue, controllerXbox, controllerKeyboard)
+    inputHandlerThread = controllerHandler(outgoing_queue, controllerXbox, controllerKeyboard, TCPClient)
     inputHandlerThread.start()
-
-    
     
     # Start GUI
     app = QApplication(sys.argv)
