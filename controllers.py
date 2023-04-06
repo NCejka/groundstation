@@ -99,12 +99,12 @@ class XboxController(object):
                 # print("Deleting self")
                 # del self # doesnt work like that b :(
             
-            #sleep(0.1) # Slow poll rate to 30 hz
+            sleep(0.1) # Slow poll rate to 30 hz
 
 from threading import Thread
 
 class controllerHandler(Thread):
-    def __init__(self, server_queue_out, xbox, keyboard, TCPClient):
+    def __init__(self, server_queue_out, xbox, keyboard):
         Thread.__init__(self)
         self.daemon = True
         
@@ -112,11 +112,8 @@ class controllerHandler(Thread):
         self.server_queue_out = server_queue_out
         self.xbox = xbox
         self.keyboard = keyboard
-        
-        self.TCPClient = TCPClient
     
     def run(self):
-        
         # init input conditions
         a = 0
         b = 0
@@ -143,22 +140,14 @@ class controllerHandler(Thread):
                 y = self.xbox.Y
                 
                 if(a == 1 and aOld == 0):
-                    #self.server_queue_out.put('a100')
-                    self.TCPClient.Send('a100')
+                    self.server_queue_out.put('a100')
                 elif(b == 1 and bOld == 0):
-                    #self.server_queue_out.put('a111')
-                    self.TCPClient.Send('a111')
-                
-                elif(y == 1 and yOld ==0):
-                    self.TCPClient.Close()
-                    RUN = False
+                    self.server_queue_out.put('a111')
 
                 if(LJX > -1 and LJX<65535):
-                    #self.server_queue_out.put('a3'+ f'{LJX:04x}'+f'{RJX:04x}')
-                    self.TCPClient.Send('a3'+ f'{LJX:04x}'+f'{RJX:04x}')
+                    self.server_queue_out.put('a3'+ f'{LJX:04x}'+f'{RJX:04x}')
                 if(-1 < RT and RT < 65535):
-                    #self.server_queue_out.put('a4'+ f'{RT:02x}'+f'{LT:02x}')
-                    self.TCPClient.Send('a4'+ f'{RT:02x}'+f'{LT:02x}')
+                    self.server_queue_out.put('a4'+ f'{RT:02x}'+f'{LT:02x}')
                 #### ROBOT CODE CONDITIONS ####
                 
                 aOld = a
