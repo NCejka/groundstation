@@ -8,8 +8,6 @@ class XboxController(object):
     MAX_JOY_VAL = math.pow(2, 15)
 
     def __init__(self):
-        self.running = threading.Event() # Used to pause thread execution
-        
         self.LeftJoystickY = 0
         self.LeftJoystickX = 0
         self.RightJoystickY = 0
@@ -31,6 +29,8 @@ class XboxController(object):
         self.UpDPad = 0
         self.DownDPad = 0
 
+        self.running = threading.Event() # Used to pause thread execution
+        
         self._monitor_thread = threading.Thread(target=self._monitor_controller, args=())
         self._monitor_thread.daemon = True
         self._monitor_thread.start() # Starts new thread for object execution
@@ -93,13 +93,13 @@ class XboxController(object):
                     elif event.code == 'BTN_TRIGGER_HAPPY4':
                         self.DownDPad = event.state
                     
-                    sleep(0.016) # Slow poll rate to 60 hz
-                    
             except Exception as ex:
                 print(ex)
                 print(f"Need to restart {self}")
                 # print("Deleting self")
                 # del self # doesnt work like that b :(
+            
+            sleep(0.1) # Slow poll rate to 30 hz
 
 from threading import Thread
 
@@ -125,7 +125,9 @@ class controllerHandler(Thread):
         yOld = 0
         while True:
             self.running.wait()
+            
             if self.xbox.running.is_set():
+                # Get xbox controller inputs
                 #xboxInput = self.xbox.read()
                 #### ROBOT CODE CONDITIONS ####
                 LJX = int((self.xbox.LeftJoystickX+1) *65535/2)
@@ -155,14 +157,20 @@ class controllerHandler(Thread):
                 # # Send commands to TCP queue
                 # if xboxInput[2] == 1:
                 #     ('a1')
-            
+                
+            else:
+                # Get keyboard inputs
+                key = self.keyboard.key
+                if key.isalpha():
+                    print("sending", key)
+                    #self.server_queue_out.put()
             
             sleep(0.1) # Slow poll rate
 
 
 
 
-from pynput import keyboard
+import keyboard
 
 # THIS MAY WORK BETTER IN THE FUTURE???
 class KeyboardController(threading.Thread):
@@ -173,30 +181,33 @@ class KeyboardController(threading.Thread):
         self.running = threading.Event() # Used to pause thread execution
         self.daemon = True # Allows python to exit if only daemon threads remain (non-essential)
         self.start() # Starts new thread for object execution
+        
+        self.key = ""
 
     def run(self):
         while True:
             self.running.wait() # Waits here if running event not set
-            print("Keyboard input running")
+            
+            #print("Keyboard input running")
             
             #key = input()
             #print(key)
             #self.input_queue.put(key)
             
-            def on_press(key):
-                try:
-                    print('alphanumeric key {0} pressed'.format(key.char))
-                except AttributeError:
-                    print('special key {0} pressed'.format(key))
+            # def on_press(key):
+            #     try:
+            #         print('alphanumeric key {0} pressed'.format(key.char))
+            #     except AttributeError:
+            #         print('special key {0} pressed'.format(key))
                 
-                self.running.wait() # Waits here if running event not set
+            #     self.running.wait() # Waits here if running event not set
 
-            def on_release(key):
-                # print('{0} released'.format(key))
-                # if key == keyboard.Key.esc:
-                #     # Stop listener
-                #     return False
-                return
+            # def on_release(key):
+            #     # print('{0} released'.format(key))
+            #     # if key == keyboard.Key.esc:
+            #     #     # Stop listener
+            #     #     return False
+            #     return
             
             # # Attempt 1
             # listener = keyboard.Listener(on_press=on_press, on_release=on_release)
@@ -207,11 +218,11 @@ class KeyboardController(threading.Thread):
             #     listener.join()
             
             # Attempt 3
-            event = keyboard.read_event()
-            print(event)
+            self.key = keyboard.read_key()
+            #print(event)
             # https://pynput.readthedocs.io/en/latest/keyboard.html
             
-            sleep(0.016) # Slow poll rate to 60 hz
+            sleep(0.1) # Slow poll rate to 60 hz
 
 
 

@@ -16,11 +16,11 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QDockWidget, QFrame, QGridLayout,
-    QGroupBox, QHBoxLayout, QLCDNumber, QLabel,
-    QMainWindow, QMenu, QMenuBar, QPushButton,
-    QSizePolicy, QStatusBar, QTabWidget, QTextBrowser,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QDockWidget, QFrame,
+    QGridLayout, QGroupBox, QHBoxLayout, QLCDNumber,
+    QLabel, QMainWindow, QMenu, QMenuBar,
+    QPushButton, QSizePolicy, QStatusBar, QTabWidget,
+    QTextBrowser, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -189,50 +189,38 @@ class Ui_MainWindow(object):
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.tabWidget = QTabWidget(self.dockWidgetContents_2)
         self.tabWidget.setObjectName(u"tabWidget")
-        sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
-        self.tabWidget.setSizePolicy(sizePolicy)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
+        self.tabWidget.setSizePolicy(sizePolicy1)
         self.tabWidget.setTabPosition(QTabWidget.North)
         self.tab = QWidget()
         self.tab.setObjectName(u"tab")
         self.gridLayout_3 = QGridLayout(self.tab)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
-        self.frame = QFrame(self.tab)
-        self.frame.setObjectName(u"frame")
-        self.frame.setFrameShape(QFrame.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Raised)
-        self.verticalLayout = QVBoxLayout(self.frame)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.label = QLabel(self.frame)
-        self.label.setObjectName(u"label")
-        font = QFont()
-        font.setPointSize(14)
-        font.setUnderline(True)
-        self.label.setFont(font)
-        self.label.setAutoFillBackground(False)
-        self.label.setAlignment(Qt.AlignCenter)
+        self.groupBox_4 = QGroupBox(self.tab)
+        self.groupBox_4.setObjectName(u"groupBox_4")
+        self.verticalLayout_2 = QVBoxLayout(self.groupBox_4)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.label_7 = QLabel(self.groupBox_4)
+        self.label_7.setObjectName(u"label_7")
+        self.label_7.setFrameShape(QFrame.Box)
 
-        self.verticalLayout.addWidget(self.label)
+        self.verticalLayout_2.addWidget(self.label_7)
 
-        self.label_5 = QLabel(self.frame)
-        self.label_5.setObjectName(u"label_5")
-        self.label_5.setFrameShape(QFrame.Box)
-        self.label_5.setFrameShadow(QFrame.Plain)
+        self.pushButton = QPushButton(self.groupBox_4)
+        self.pushButton.setObjectName(u"pushButton")
+        sizePolicy1.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
+        self.pushButton.setSizePolicy(sizePolicy1)
 
-        self.verticalLayout.addWidget(self.label_5)
-
-        self.pushButton_2 = QPushButton(self.frame)
-        self.pushButton_2.setObjectName(u"pushButton_2")
-
-        self.verticalLayout.addWidget(self.pushButton_2)
+        self.verticalLayout_2.addWidget(self.pushButton)
 
 
-        self.gridLayout_3.addWidget(self.frame, 0, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.groupBox_4, 0, 3, 1, 1)
 
         self.groupBoxController = QGroupBox(self.tab)
         self.groupBoxController.setObjectName(u"groupBoxController")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.groupBoxController.sizePolicy().hasHeightForWidth())
         self.groupBoxController.setSizePolicy(sizePolicy1)
         self.groupBoxController.setAlignment(Qt.AlignCenter)
@@ -240,100 +228,84 @@ class Ui_MainWindow(object):
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.pushButton_3 = QPushButton(self.groupBoxController)
         self.pushButton_3.setObjectName(u"pushButton_3")
+        sizePolicy1.setHeightForWidth(self.pushButton_3.sizePolicy().hasHeightForWidth())
+        self.pushButton_3.setSizePolicy(sizePolicy1)
 
         self.verticalLayout_7.addWidget(self.pushButton_3)
 
         self.pushButton_5 = QPushButton(self.groupBoxController)
         self.pushButton_5.setObjectName(u"pushButton_5")
+        sizePolicy1.setHeightForWidth(self.pushButton_5.sizePolicy().hasHeightForWidth())
+        self.pushButton_5.setSizePolicy(sizePolicy1)
 
         self.verticalLayout_7.addWidget(self.pushButton_5)
 
 
         self.gridLayout_3.addWidget(self.groupBoxController, 0, 2, 1, 1)
 
-        self.frame_3 = QFrame(self.tab)
-        self.frame_3.setObjectName(u"frame_3")
-        self.frame_3.setFrameShape(QFrame.StyledPanel)
-        self.frame_3.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_3 = QVBoxLayout(self.frame_3)
+        self.groupBox_5 = QGroupBox(self.tab)
+        self.groupBox_5.setObjectName(u"groupBox_5")
+        self.verticalLayout_3 = QVBoxLayout(self.groupBox_5)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.label_3 = QLabel(self.frame_3)
-        self.label_3.setObjectName(u"label_3")
-        self.label_3.setFont(font)
-        self.label_3.setAlignment(Qt.AlignCenter)
+        self.label_8 = QLabel(self.groupBox_5)
+        self.label_8.setObjectName(u"label_8")
+        self.label_8.setFrameShape(QFrame.Box)
 
-        self.verticalLayout_3.addWidget(self.label_3)
+        self.verticalLayout_3.addWidget(self.label_8)
 
-        self.label_7 = QLabel(self.frame_3)
-        self.label_7.setObjectName(u"label_7")
-        self.label_7.setFrameShape(QFrame.Box)
+        self.pushButton_6 = QPushButton(self.groupBox_5)
+        self.pushButton_6.setObjectName(u"pushButton_6")
+        sizePolicy1.setHeightForWidth(self.pushButton_6.sizePolicy().hasHeightForWidth())
+        self.pushButton_6.setSizePolicy(sizePolicy1)
 
-        self.verticalLayout_3.addWidget(self.label_7)
-
-        self.pushButton = QPushButton(self.frame_3)
-        self.pushButton.setObjectName(u"pushButton")
-
-        self.verticalLayout_3.addWidget(self.pushButton)
+        self.verticalLayout_3.addWidget(self.pushButton_6)
 
 
-        self.gridLayout_3.addWidget(self.frame_3, 0, 3, 1, 1)
+        self.gridLayout_3.addWidget(self.groupBox_5, 0, 4, 1, 1)
 
-        self.frame_2 = QFrame(self.tab)
-        self.frame_2.setObjectName(u"frame_2")
-        self.frame_2.setFrameShape(QFrame.StyledPanel)
-        self.frame_2.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_2 = QVBoxLayout(self.frame_2)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.label_2 = QLabel(self.frame_2)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setFont(font)
-        self.label_2.setAlignment(Qt.AlignCenter)
+        self.groupBox_2 = QGroupBox(self.tab)
+        self.groupBox_2.setObjectName(u"groupBox_2")
+        sizePolicy1.setHeightForWidth(self.groupBox_2.sizePolicy().hasHeightForWidth())
+        self.groupBox_2.setSizePolicy(sizePolicy1)
+        self.verticalLayout_12 = QVBoxLayout(self.groupBox_2)
+        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
+        self.label_5 = QLabel(self.groupBox_2)
+        self.label_5.setObjectName(u"label_5")
+        self.label_5.setFrameShape(QFrame.Box)
+        self.label_5.setFrameShadow(QFrame.Plain)
 
-        self.verticalLayout_2.addWidget(self.label_2)
+        self.verticalLayout_12.addWidget(self.label_5)
 
-        self.label_6 = QLabel(self.frame_2)
+        self.pushButton_2 = QPushButton(self.groupBox_2)
+        self.pushButton_2.setObjectName(u"pushButton_2")
+        sizePolicy1.setHeightForWidth(self.pushButton_2.sizePolicy().hasHeightForWidth())
+        self.pushButton_2.setSizePolicy(sizePolicy1)
+
+        self.verticalLayout_12.addWidget(self.pushButton_2)
+
+
+        self.gridLayout_3.addWidget(self.groupBox_2, 0, 0, 1, 1)
+
+        self.groupBox_3 = QGroupBox(self.tab)
+        self.groupBox_3.setObjectName(u"groupBox_3")
+        self.verticalLayout = QVBoxLayout(self.groupBox_3)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.label_6 = QLabel(self.groupBox_3)
         self.label_6.setObjectName(u"label_6")
         self.label_6.setFrameShape(QFrame.Box)
         self.label_6.setFrameShadow(QFrame.Plain)
 
-        self.verticalLayout_2.addWidget(self.label_6)
+        self.verticalLayout.addWidget(self.label_6)
 
-        self.pushButton_4 = QPushButton(self.frame_2)
+        self.pushButton_4 = QPushButton(self.groupBox_3)
         self.pushButton_4.setObjectName(u"pushButton_4")
+        sizePolicy1.setHeightForWidth(self.pushButton_4.sizePolicy().hasHeightForWidth())
+        self.pushButton_4.setSizePolicy(sizePolicy1)
 
-        self.verticalLayout_2.addWidget(self.pushButton_4)
-
-
-        self.gridLayout_3.addWidget(self.frame_2, 0, 1, 1, 1)
-
-        self.frame_4 = QFrame(self.tab)
-        self.frame_4.setObjectName(u"frame_4")
-        self.frame_4.setFrameShape(QFrame.StyledPanel)
-        self.frame_4.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_4 = QVBoxLayout(self.frame_4)
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.label_4 = QLabel(self.frame_4)
-        self.label_4.setObjectName(u"label_4")
-        self.label_4.setFont(font)
-        self.label_4.setFrameShape(QFrame.NoFrame)
-        self.label_4.setFrameShadow(QFrame.Plain)
-        self.label_4.setAlignment(Qt.AlignCenter)
-
-        self.verticalLayout_4.addWidget(self.label_4)
-
-        self.label_8 = QLabel(self.frame_4)
-        self.label_8.setObjectName(u"label_8")
-        self.label_8.setFrameShape(QFrame.Box)
-
-        self.verticalLayout_4.addWidget(self.label_8)
-
-        self.pushButton_6 = QPushButton(self.frame_4)
-        self.pushButton_6.setObjectName(u"pushButton_6")
-
-        self.verticalLayout_4.addWidget(self.pushButton_6)
+        self.verticalLayout.addWidget(self.pushButton_4)
 
 
-        self.gridLayout_3.addWidget(self.frame_4, 0, 4, 1, 1)
+        self.gridLayout_3.addWidget(self.groupBox_3, 0, 1, 1, 1)
 
         self.tabWidget.addTab(self.tab, "")
         self.tab_2 = QWidget()
@@ -362,12 +334,17 @@ class Ui_MainWindow(object):
         self.groupBoxTest = QGroupBox(self.tab_2)
         self.groupBoxTest.setObjectName(u"groupBoxTest")
         self.groupBoxTest.setAlignment(Qt.AlignCenter)
-        self.horizontalLayout_4 = QHBoxLayout(self.groupBoxTest)
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.verticalLayout_11 = QVBoxLayout(self.groupBoxTest)
+        self.verticalLayout_11.setObjectName(u"verticalLayout_11")
         self.pushButtonTest1 = QPushButton(self.groupBoxTest)
         self.pushButtonTest1.setObjectName(u"pushButtonTest1")
 
-        self.horizontalLayout_4.addWidget(self.pushButtonTest1)
+        self.verticalLayout_11.addWidget(self.pushButtonTest1)
+
+        self.checkBoxLogTraffic = QCheckBox(self.groupBoxTest)
+        self.checkBoxLogTraffic.setObjectName(u"checkBoxLogTraffic")
+
+        self.verticalLayout_11.addWidget(self.checkBoxLogTraffic)
 
 
         self.horizontalLayout_2.addWidget(self.groupBoxTest)
@@ -425,18 +402,15 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.label_fps = QLabel(self.groupBox_camera)
         self.label_fps.setObjectName(u"label_fps")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.label_fps.sizePolicy().hasHeightForWidth())
-        self.label_fps.setSizePolicy(sizePolicy3)
+        sizePolicy1.setHeightForWidth(self.label_fps.sizePolicy().hasHeightForWidth())
+        self.label_fps.setSizePolicy(sizePolicy1)
 
         self.horizontalLayout.addWidget(self.label_fps)
 
         self.pushButton_open = QPushButton(self.groupBox_camera)
         self.pushButton_open.setObjectName(u"pushButton_open")
-        sizePolicy3.setHeightForWidth(self.pushButton_open.sizePolicy().hasHeightForWidth())
-        self.pushButton_open.setSizePolicy(sizePolicy3)
+        sizePolicy1.setHeightForWidth(self.pushButton_open.sizePolicy().hasHeightForWidth())
+        self.pushButton_open.setSizePolicy(sizePolicy1)
 
         self.horizontalLayout.addWidget(self.pushButton_open)
 
@@ -445,8 +419,8 @@ class Ui_MainWindow(object):
 
         self.label_camera = QLabel(self.dockWidgetContents)
         self.label_camera.setObjectName(u"label_camera")
-        sizePolicy3.setHeightForWidth(self.label_camera.sizePolicy().hasHeightForWidth())
-        self.label_camera.setSizePolicy(sizePolicy3)
+        sizePolicy1.setHeightForWidth(self.label_camera.sizePolicy().hasHeightForWidth())
+        self.label_camera.setSizePolicy(sizePolicy1)
         self.label_camera.setScaledContents(True)
 
         self.verticalLayout_5.addWidget(self.label_camera)
@@ -461,6 +435,17 @@ class Ui_MainWindow(object):
         self.dockWidgetContents_4.setObjectName(u"dockWidgetContents_4")
         self.verticalLayout_6 = QVBoxLayout(self.dockWidgetContents_4)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.pushButtonClearConsole = QPushButton(self.dockWidgetContents_4)
+        self.pushButtonClearConsole.setObjectName(u"pushButtonClearConsole")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.pushButtonClearConsole.sizePolicy().hasHeightForWidth())
+        self.pushButtonClearConsole.setSizePolicy(sizePolicy3)
+        self.pushButtonClearConsole.setMaximumSize(QSize(16777215, 20))
+
+        self.verticalLayout_6.addWidget(self.pushButtonClearConsole)
+
         self.textBrowser_log = QTextBrowser(self.dockWidgetContents_4)
         self.textBrowser_log.setObjectName(u"textBrowser_log")
 
@@ -470,11 +455,7 @@ class Ui_MainWindow(object):
         MainWindow.addDockWidget(Qt.TopDockWidgetArea, self.dockWidget_2)
         self.dockWidget_2.raise_()
         self.dockWidgetCamera.raise_()
-        QWidget.setTabOrder(self.pushButton_2, self.pushButton_4)
-        QWidget.setTabOrder(self.pushButton_4, self.pushButton_3)
         QWidget.setTabOrder(self.pushButton_3, self.pushButton_5)
-        QWidget.setTabOrder(self.pushButton_5, self.pushButton)
-        QWidget.setTabOrder(self.pushButton, self.pushButton_6)
 
         self.menubar.addAction(self.menuSettings.menuAction())
         self.menubar.addAction(self.menuConnection.menuAction())
@@ -499,7 +480,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -531,27 +512,28 @@ class Ui_MainWindow(object):
         self.menuConnection.setTitle(QCoreApplication.translate("MainWindow", u"Connection", None))
         self.menuTools.setTitle(QCoreApplication.translate("MainWindow", u"Tools", None))
         self.dockWidgetControls.setWindowTitle(QCoreApplication.translate("MainWindow", u"Controls", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"X-Ray Screen", None))
-        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Status: UNKNOWN", None))
-        self.pushButton_2.setText(QCoreApplication.translate("MainWindow", u"DEPLOY SCREEN", None))
+        self.groupBox_4.setTitle(QCoreApplication.translate("MainWindow", u"Robot Movement", None))
+        self.label_7.setText(QCoreApplication.translate("MainWindow", u"Status: UNKNOWN", None))
+        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"MOVE ROBOT", None))
         self.groupBoxController.setTitle(QCoreApplication.translate("MainWindow", u"Controller: INACTIVE", None))
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"ACTIVATE XBOX CONTROLLER", None))
         self.pushButton_5.setText(QCoreApplication.translate("MainWindow", u"ACTIVATE KEYBOARD CONTROLLER", None))
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Robot Movement", None))
-        self.label_7.setText(QCoreApplication.translate("MainWindow", u"Status: UNKNOWN", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"MOVE ROBOT", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"X-Ray Source", None))
-        self.label_6.setText(QCoreApplication.translate("MainWindow", u"Status: UNKNOWN", None))
-        self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"DEPLOY SOURCE", None))
-        self.label_4.setText(QCoreApplication.translate("MainWindow", u"Camera Movement", None))
+        self.groupBox_5.setTitle(QCoreApplication.translate("MainWindow", u"Camera Movement", None))
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"Status: UNKNOWN", None))
         self.pushButton_6.setText(QCoreApplication.translate("MainWindow", u"MOVE CAMERA", None))
+        self.groupBox_2.setTitle(QCoreApplication.translate("MainWindow", u"X-Ray Screen", None))
+        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Status: UNKNOWN", None))
+        self.pushButton_2.setText(QCoreApplication.translate("MainWindow", u"DEPLOY SCREEN", None))
+        self.groupBox_3.setTitle(QCoreApplication.translate("MainWindow", u"X-Ray Source", None))
+        self.label_6.setText(QCoreApplication.translate("MainWindow", u"Status: UNKNOWN", None))
+        self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"DEPLOY SOURCE", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Robot", None))
         self.groupBox.setTitle(QCoreApplication.translate("MainWindow", u"Server Status: DISCONNECTED", None))
         self.pushButton_9.setText(QCoreApplication.translate("MainWindow", u"CONNECT", None))
         self.pushButtonPing.setText(QCoreApplication.translate("MainWindow", u"PING", None))
         self.groupBoxTest.setTitle(QCoreApplication.translate("MainWindow", u"Testing", None))
         self.pushButtonTest1.setText(QCoreApplication.translate("MainWindow", u"TEST 1", None))
+        self.checkBoxLogTraffic.setText(QCoreApplication.translate("MainWindow", u"Log all network traffic", None))
         self.groupBoxTest_2.setTitle(QCoreApplication.translate("MainWindow", u"Incoming Queue", None))
         self.groupBoxTest_3.setTitle(QCoreApplication.translate("MainWindow", u"Outgoing Queue", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Server", None))
@@ -561,5 +543,6 @@ class Ui_MainWindow(object):
         self.pushButton_open.setText(QCoreApplication.translate("MainWindow", u"Open Feed", None))
         self.label_camera.setText(QCoreApplication.translate("MainWindow", u"camera", None))
         self.dockWidget_2.setWindowTitle(QCoreApplication.translate("MainWindow", u"Console", None))
+        self.pushButtonClearConsole.setText(QCoreApplication.translate("MainWindow", u"Clear Console", None))
     # retranslateUi
 

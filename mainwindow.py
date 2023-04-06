@@ -97,15 +97,17 @@ class MainWindow(QMainWindow):
             self.ui.pushButton_3.setText("ACTIVATE XBOX CONTROLLER")
     
     @Slot()
-    def on_pushButton_5_clicked(self):
+    def on_pushButton_5_clicked(self): # KEYBOARD BUTTON
         if self.ui.pushButton_5.text()[:8] == "ACTIVATE":
             controllerKeyboard.running.set()
-            #self.keyboard.listener.start()
+            inputHandlerThread.running.set()
+            
             self.ui.pushButton_5.setText("DE-ACTIVATE KEYBOARD CONTROLLER")
             
         else:
+            inputHandlerThread.running.clear()
             controllerKeyboard.running.clear()
-            #self.keyboard.listener.stop()
+            
             self.ui.pushButton_5.setText("ACTIVATE KEYBOARD CONTROLLER")
 
     @Slot()
@@ -212,6 +214,11 @@ class MainWindow(QMainWindow):
             self.ui.label_camera.setPixmap(QPixmap.fromImage(image))
             self.ui.pushButton_open.setText("Open Feed")
     
+    @Slot()
+    def on_pushButtonClearConsole_clicked(self):
+        self.logger.textBrowser.clear()
+        self.logger.onNewText(f"Project J.A.V.E.L.I.N. Ground Control Station - {str(datetime.now())[:-10]}\n")
+    
     # @Slot(QImage) # Slot to update camera feed label when called with new frame
     # def update_label(self, frame):
     #     if self.ui.pushButton_open.text()[:4] == "Open":
@@ -264,7 +271,7 @@ class ConsoleLogger(QObject):
                 return
         
         # Format text
-        text = f"[{round(time() - self.start_time)}]" + text + "\n"
+        text = f"[{round(time() - self.start_time, 3)}]" + text + "\n"
         
         with open(self.filepath, "a") as logfile:
             logfile.write(text)
@@ -293,13 +300,13 @@ import queue
 # https://superfastpython.com/thread-share-variables/
 
 # TO TEST
-server_ip = "127.0.0.1"
-server_port = 65432
+# server_ip = "127.0.0.1"
+# server_port = 65432
 
 # TO RUN
 # set my IPv4 static to 192.168.0.98
-# server_ip = "192.168.0.123"
-# server_port = 10
+server_ip = "192.168.0.123"
+server_port = 10
 
 server_socket = None
 server_connection = False
@@ -309,7 +316,7 @@ PACKET_SIZE = 64 # 8 byte packets
 outgoing_queue = queue.Queue() #FIFO queue with infinite size; send packets in order of received
 incoming_queue = queue.Queue()
 
-incoming_frame_queue = queue.Queue() # for camera stream frames
+#incoming_frame_queue = queue.Queue() # for camera stream frames
 
 
 # site to connect queue thread size to GUI progressbar
@@ -329,6 +336,8 @@ def thread_send_data(pause):
         # Get the next packet from the outgoing packet queue
         data = outgoing_queue.get()
         
+        #print(f"sending {data}")
+        
         # Encode packet
         try:
             packet = bytes.fromhex(data)
@@ -340,13 +349,17 @@ def thread_send_data(pause):
         
         # send encoded packet
         try:
-            print(f"sending {packet}")
+            
             
             # NEED TO SLICE INTO MULTIPLE PACKETS???
             
             #server_socket.send(packet)
             server_socket.sendall(packet)
-            print('sent')
+            #print('sent')
+            
+            # log traffic if enabled
+            if window.ui.checkBoxLogTraffic.isChecked():
+                print(f"sent {packet}")
         except Exception as ex:
             print(f"Error: {ex}")
         
@@ -412,15 +425,14 @@ def thread_recv_data(pause):
             break
         
         
-        
-        
         # Add data to incoming packet queue
         # if data_id == "camf":
         #     data = array(data)
         #     incoming_frame_queue.put()
         # else:
         incoming_queue.put(packet)
-        print(f"Received data: {packet}")
+        if window.ui.checkBoxLogTraffic.isChecked():
+            print(f"recv {packet}")
         
     
     # The client will disconnect if broken out of loop??? noo>?
