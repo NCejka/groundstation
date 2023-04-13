@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         # Identify global variables for class use
         global camera_timer
         global server_connection
-        
+        global outgoing_queue
 
     def load_ui(self):
         self.ui = Ui_MainWindow()
@@ -76,6 +76,22 @@ class MainWindow(QMainWindow):
     #     else:
     #         if self.client.send(codeCameraRetract):
     #             self.ui.pushButton_4.setText("DEPLOY SOURCE")
+    
+    @Slot()
+    def on_pushButton_screenDeploy_clicked(self): # SCREEN DEPLOY
+        outgoing_queue.put('0000')
+    
+    @Slot()
+    def on_pushButton_screenRetract_clicked(self): # SCREEN RETRACT
+        outgoing_queue.put('0000')
+
+    @Slot()
+    def on_pushButton_sourceDeploy_clicked(self): # SOURCE DEPLOY
+        outgoing_queue.put('0000')
+    
+    @Slot()
+    def on_pushButton_sourceRetract_clicked(self): # SOURCE RETRACT
+        outgoing_queue.put('0000')
 
     @Slot()
     def on_pushButton_3_clicked(self): # XBOX BUTTON
@@ -110,18 +126,18 @@ class MainWindow(QMainWindow):
             
             self.ui.pushButton_5.setText("ACTIVATE KEYBOARD CONTROLLER")
 
-    @Slot()
-    def on_pushButton_clicked(self): # ROBOT MOVE BUTTON
-        if self.ui.pushButton_6.text()[:4] == "LOCK":
-            return # Refactor this to have the button disabled instead
+    # @Slot()
+    # def on_pushButton_clicked(self): # ROBOT MOVE BUTTON
+    #     if self.ui.pushButton_6.text()[:4] == "LOCK":
+    #         return # Refactor this to have the button disabled instead
         
-        if self.ui.pushButton.text()[:4] == "MOVE":
+    #     if self.ui.pushButton.text()[:4] == "MOVE":
             
-            self.ui.pushButton.setText("LOCK ROBOT")
+    #         self.ui.pushButton.setText("LOCK ROBOT")
             
-        else:
+    #     else:
             
-            self.ui.pushButton.setText("MOVE ROBOT")
+    #         self.ui.pushButton.setText("MOVE ROBOT")
             
     # @Slot()
     # def on_pushButton_6_clicked(self): # CAMERA MOVE BUTTON
