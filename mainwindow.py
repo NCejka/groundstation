@@ -219,12 +219,15 @@ class MainWindow(QMainWindow):
         # if not server_connection:
         #     print("No server connection!")
         #     return
+        global camera_running
         
         if self.ui.pushButton_open.text()[:4] == "Open":
-            camera_timer.start(1000/40)  # 30 fps = (1000/30)   /40 gives ~32fps
+            #camera_timer.start(1000/40)  # 30 fps = (1000/30)   /40 gives ~32fps
+            camera_running.set()
             self.ui.pushButton_open.setText("Close Feed")
         else:
-            camera_timer.stop()
+            #camera_timer.stop()
+            camera_running.clear()
             self.ui.label_fps.setText("0 FPS")
             image = QImage("camerabackground.png")
             self.ui.label_camera.setPixmap(QPixmap.fromImage(image))
@@ -528,7 +531,7 @@ def server_connect_disconnect():
 
 #### Camera stream handling ####
 import cv2
-from PySide6.QtCore import QTimer, QDateTime, Signal
+from PySide6.QtCore import QTimer, QDateTime, Signal, QThread
 from PySide6.QtGui import QImage, QPixmap
 from time import sleep
 
@@ -536,73 +539,85 @@ from time import sleep
 #     frame_received = Signal(QImage)
     
 # Threaded camera feed handling - WE NEED >= 240p @ 25fps
-def update_camera(label, fpsLabel, imageHub):
-    global lastActive
-    global lastActiveCheck
-    global ACTIVE_CHECK_SECONDS
-    global frames
-    global frame_time
-    # start looping over all the frames
-    # https://stackoverflow.com/questions/48416936/pyqt5-update-labels-inrun-time
-    while True:
-        # receive RPi name and frame from the RPi and acknowledge the receipt
-        (rpiName, frame) = imageHub.recv_image() # sits here till a frame sent
-        imageHub.send_reply(b'OK')
-        # if a device is not in the last active dictionary then it means that its a newly connected device
-        if rpiName not in lastActive.keys():
-            print("[INFO] receiving data from {}...".format(rpiName))
-        # record the last active time for the device from which we just received a frame
-        lastActive[rpiName] = datetime.now()
-        
-        # update the new frame in the frame dictionary
-        frameDict[rpiName] = frame
-        
-        # # if current time - last time when the active device check was made is greater than the threshold set then do a check
-        # if (datetime.now() - lastActiveCheck).seconds > ACTIVE_CHECK_SECONDS:
-        #     # loop over all previously active devices
-        #     for (rpiName, ts) in list(lastActive.items()):
-        #         # remove the RPi from the last active and frame
-        #         # dictionaries if the device hasn't been active recently
-        #         if (datetime.now() - ts).seconds > ACTIVE_CHECK_SECONDS:
-        #             print("[INFO] lost connection to {}".format(rpiName))
-        #             lastActive.pop(rpiName)
-        #             frameDict.pop(rpiName)
-        #     # set the last active check time as current time
-        #     lastActiveCheck = datetime.now()
+#def update_camera(label, fpsLabel, imageHub):
+class cameraDisplayThread(QThread):
+    def __init__(self):
+        super().__init__()
     
-        # # ret, frame = cam.read()
-        # # if ret:
-        # #     # Convert the frame to a QImage
-        # #     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        # #     image = QImage(frame, frame.shape[1], frame.shape[0], QImage.Format_RGB888)
-        # #     label.setPixmap(QPixmap.fromImage(image))
-        # #     # Increment fps counter when successful
-        # #     frames += 1
-        # # else:
-        # #     print("error reading frame")
+    def run(self):
+        global lastActive
+        global lastActiveCheck
+        global ACTIVE_CHECK_SECONDS
+        global frames
+        global frame_time
+        global window
+        global imageHub
+        global camera_running
+        # start looping over all the frames
+        # https://stackoverflow.com/questions/48416936/pyqt5-update-labels-inrun-time 
         
-        # #### TESTING #### ^ old working code
-        # frame = incoming_frame_queue.get()
+        while True:
+            camera_running.wait() # block here if not running
+            
+            # receive RPi name and frame from the RPi and acknowledge the receipt
+            (rpiName, frame) = imageHub.recv_image() # sits here till a frame sent
+            imageHub.send_reply(b'OK')
+            # if a device is not in the last active dictionary then it means that its a newly connected device
+            if rpiName not in lastActive.keys():
+                print("[INFO] receiving data from {}...".format(rpiName))
+            # record the last active time for the device from which we just received a frame
+            lastActive[rpiName] = datetime.now()
+            
+            # update the new frame in the frame dictionary
+            frameDict[rpiName] = frame
+            
+            # # if current time - last time when the active device check was made is greater than the threshold set then do a check
+            # if (datetime.now() - lastActiveCheck).seconds > ACTIVE_CHECK_SECONDS:
+            #     # loop over all previously active devices
+            #     for (rpiName, ts) in list(lastActive.items()):
+            #         # remove the RPi from the last active and frame
+            #         # dictionaries if the device hasn't been active recently
+            #         if (datetime.now() - ts).seconds > ACTIVE_CHECK_SECONDS:
+            #             print("[INFO] lost connection to {}".format(rpiName))
+            #             lastActive.pop(rpiName)
+            #             frameDict.pop(rpiName)
+            #     # set the last active check time as current time
+            #     lastActiveCheck = datetime.now()
         
-        
-        image = QImage(frame, frame.shape[1], frame.shape[0], QImage.Format_RGB888)
-        label.setPixmap(QPixmap.fromImage(image))
-        
-        # Increment fps counter when successful
-        frames += 1
-        ####
-        
-        # Update FPS counter
-        current_time = QDateTime.currentDateTime()
-        elapsed_time = frame_time.msecsTo(QDateTime.currentDateTime())/1000.0
-        if elapsed_time >= 1.0:
-            fps = round(frames /elapsed_time, 1)
-            fpsLabel.setText(f"{frame.shape[1]}x{frame.shape[0]} @ {fps} FPS")
-            frames = 0
-            frame_time = current_time
-        
-        thingthatfixescamera += 1 # this will fail but causes UI to not lock up... why idk but it works
-        #app.processEvents()
+            # # ret, frame = cam.read()
+            # # if ret:
+            # #     # Convert the frame to a QImage
+            # #     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            # #     image = QImage(frame, frame.shape[1], frame.shape[0], QImage.Format_RGB888)
+            # #     label.setPixmap(QPixmap.fromImage(image))
+            # #     # Increment fps counter when successful
+            # #     frames += 1
+            # # else:
+            # #     print("error reading frame")
+            
+            # #### TESTING #### ^ old working code
+            # frame = incoming_frame_queue.get()
+            
+            
+            image = QImage(frame, frame.shape[1], frame.shape[0], QImage.Format_RGB888)
+            window.ui.label_camera.setPixmap(QPixmap.fromImage(image))
+            
+            # Increment fps counter when successful
+            frames += 1
+            ####
+            
+            # Update FPS counter
+            current_time = QDateTime.currentDateTime()
+            elapsed_time = frame_time.msecsTo(QDateTime.currentDateTime())/1000.0
+            if elapsed_time >= 1.0:
+                fps = round(frames /elapsed_time, 1)
+                window.ui.label_fps.setText(f"{frame.shape[1]}x{frame.shape[0]} @ {fps} FPS")
+                frames = 0
+                frame_time = current_time
+            
+            #thingthatfixescamera += 1 # this will fail but causes UI to not lock up... why idk but it works
+            sleep(40/1000)
+            #app.processEvents()
 
 import imagezmq
 
@@ -643,13 +658,16 @@ if __name__ == "__main__":
     # Start camera handler
     #cameraHandler = cameraFeedHandler()
     #cameraHandler.frame_received.connect(update_label)
+    camera_running = threading.Event() # Used to pause thread execution
+    cameraHandler = cameraDisplayThread()
+    cameraHandler.start()
     
     frames = 0
     frame_time = QDateTime.currentDateTime()
     thingthatfixescamera = 0 # do not declare this as global in update_camera otherwise it freezes for some reason
     #camera = cv2.VideoCapture(0) # 0 opens default camera
-    camera_timer = QTimer()
-    camera_timer.timeout.connect(lambda: update_camera(window.ui.label_camera, window.ui.label_fps, imageHub))
+    #camera_timer = QTimer()
+    #camera_timer.timeout.connect(lambda: update_camera(window.ui.label_camera, window.ui.label_fps, imageHub))
     
     
     sys.exit(app.exec())
