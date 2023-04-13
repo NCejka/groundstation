@@ -628,7 +628,7 @@ if __name__ == "__main__":
     window.show()
     
     # initialize the ImageHub object
-    imageHub = imagezmq.ImageHub()
+    imageHub = imagezmq.ImageHub(open_port="tcp://{}:5555".format('127.0.0.1')) # try with that passed?
     
     hostname = socket.gethostname()
     print(f"imagezmq.ImageHub() initialized on {socket.gethostbyname(hostname)}")
