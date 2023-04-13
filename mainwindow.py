@@ -203,12 +203,15 @@ class MainWindow(QMainWindow):
         # if not server_connection:
         #     print("No server connection!")
         #     return
+        global camera_enabled
         
         if self.ui.pushButton_open.text()[:4] == "Open":
-            camera_timer.start(1000/40)  # 30 fps = (1000/30)   /40 gives ~32fps
+            #camera_timer.start(1000/40)  # 30 fps = (1000/30)   /40 gives ~32fps
+            camera_enabled = True
             self.ui.pushButton_open.setText("Close Feed")
         else:
-            camera_timer.stop()
+            #camera_timer.stop()
+            camera_enabled = False
             self.ui.label_fps.setText("0 FPS")
             image = QImage("camerabackground.png")
             self.ui.label_camera.setPixmap(QPixmap.fromImage(image))
@@ -300,14 +303,13 @@ import queue
 # https://superfastpython.com/thread-share-variables/
 
 # TO TEST
-# server_ip = "127.0.0.1"
+server_ip = "127.0.0.1"
 server_port = 65432
-
-server_ip = "192.168.0.110"
 
 # TO RUN ON ROBOT
 # set my IPv4 static to 192.168.0.98
 # server_ip = "192.168.0.123"
+#server_ip = "192.168.0.110"
 # server_port = 10
 
 server_socket = None
@@ -317,6 +319,8 @@ PACKET_SIZE = 64 # 8 byte packets
 
 outgoing_queue = queue.Queue() #FIFO queue with infinite size; send packets in order of received
 incoming_queue = queue.Queue()
+
+camera_enabled = False
 
 #incoming_frame_queue = queue.Queue() # for camera stream frames
 
@@ -368,12 +372,15 @@ def thread_send_data(pause):
         
 
 # import pickle # used for encoding objects!
-from numpy import array
+import numpy
 
 def thread_recv_data(pause):
     global server_socket
     global server_connection
     global window
+    global camera_enabled
+    
+    frame_ready = Signal(QImage)
     # Continuously receive data from server
     while True: #server_connection
         # all_packets = False
@@ -384,10 +391,40 @@ def thread_recv_data(pause):
         pause.wait()
         
         try:
+            
             packet = server_socket.recv(PACKET_SIZE) # blocks here
+            # Receive entire camera frame:
+            bytes_data = b""
+            while len(packet) > 4:
+                bytes_data += packet
+            if len(bytes_data) > 0 and packet == b"ffff":
+                # Process and notify GUI label of frame update
+                try:
+                    if camera_enabled:
+                        # Convert the bytes data to a numpy array
+                        buffer = numpy.frombuffer(bytes_data, dtype=numpy.uint8)
+                        # Decode the encoded image data
+                        frame = cv2.imdecode(buffer, flags=cv2.IMREAD_COLOR)
+                        qimage = QImage(frame, frame.shape[1], frame.shape[0], QImage.Format_RGB888)
+                        #frame_ready.emit(qimage)
+                        window.ui.label_camera.setPixmap(QPixmap.fromImage(qimage))
+                    
+                    
+                except Exception as ex:
+                    print(f"Camera frame error: {ex}")
+                    
+                continue
+                
+                
         except Exception as ex:
             print(f"Recv Error: {ex}")
             server_connect_disconnect()
+        
+        # ignore frame end packets that slip by
+        if packet == b"ffff":
+            continue
+            
+        
         try:
             packet = packet.hex()
         except Exception as ex:
@@ -434,7 +471,7 @@ def thread_recv_data(pause):
         # else:
         incoming_queue.put(packet)
         if window.ui.checkBoxLogTraffic.isChecked():
-            print(f"recv {packet}")
+            print(f"recv {packet}") # packet[:4]
         
     
     # The client will disconnect if broken out of loop??? noo>?
@@ -512,7 +549,7 @@ def server_connect_disconnect():
 
 #### Camera stream handling ####
 import cv2
-from PySide6.QtCore import QTimer, QDateTime, Signal
+from PySide6.QtCore import QTimer, QDateTime, Signal, QThread
 from PySide6.QtGui import QImage, QPixmap
 from time import sleep
 
@@ -532,6 +569,11 @@ def update_camera(label, fpsLabel, imageHub):
         # receive RPi name and frame from the RPi and acknowledge the receipt
         (rpiName, frame) = imageHub.recv_image() # sits here till a frame sent
         imageHub.send_reply(b'OK')
+    # We can decompress jpg if compressed when sent
+        # compressed_frame = imageHub.recv_jpg()
+        # frame = cv2.imdecode(compressed_frame, cv2.IMREAD_COLOR)
+        # rpiName = "na"
+    #
         # if a device is not in the last active dictionary then it means that its a newly connected device
         if rpiName not in lastActive.keys():
             print("[INFO] receiving data from {}...".format(rpiName))
@@ -588,6 +630,37 @@ def update_camera(label, fpsLabel, imageHub):
         thingthatfixescamera += 1 # this will fail but causes UI to not lock up... why idk but it works
         #app.processEvents()
 
+class cameraDisplayThread(QThread):
+    # tells the mainwindow to update label
+    frame_ready = Signal(QImage)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.stopped = False
+
+    def run(self):
+        # Create a VideoCapture object for the camera
+        cap = cv2.VideoCapture(0)
+
+        while not self.stopped:
+            # Capture a frame from the camera
+            ret, frame = cap.read()
+
+            if ret:
+                # Convert the frame to a QImage
+                height, width, channels = frame.shape
+                bytes_per_line = channels * width
+                qimage = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
+
+                # Emit the frame_ready signal with the QImage
+                self.frame_ready.emit(qimage)
+
+    def stop(self):
+        self.stopped = True
+
+
+
+
 import imagezmq
 
 if __name__ == "__main__":
@@ -611,8 +684,8 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
     
-    # initialize the ImageHub object
-    imageHub = imagezmq.ImageHub()
+    # initialize the ImageHub object ; MUST BE BEFORE CAMERA CLIENT
+    imageHub = imagezmq.ImageHub(open_port="tcp://{}:5555".format('127.0.0.1')) # try with that passed?
     
     hostname = socket.gethostname()
     print(f"imagezmq.ImageHub() initialized on {socket.gethostbyname(hostname)}")
