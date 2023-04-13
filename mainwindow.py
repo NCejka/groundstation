@@ -320,14 +320,14 @@ import queue
 
 # TO TEST
 # server_ip = "127.0.0.1"
-server_port = 65432
+#server_port = 65432
 
-server_ip = "192.168.0.110"
+# server_ip = "192.168.0.110"
 
 # TO RUN ON ROBOT
 # set my IPv4 static to 192.168.0.98
-# server_ip = "192.168.0.123"
-# server_port = 10
+server_ip = "192.168.0.123"
+server_port = 10
 
 server_socket = None
 server_connection = False
@@ -616,7 +616,7 @@ class cameraDisplayThread(QThread):
                 frame_time = current_time
             
             #thingthatfixescamera += 1 # this will fail but causes UI to not lock up... why idk but it works
-            sleep(40/1000)
+            #sleep()
             #app.processEvents()
 
 import imagezmq
